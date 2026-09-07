@@ -1,0 +1,15 @@
+<?php require "../includes/auth.php";require "../config/database.php";$page_title="Dashboard";$active="dashboard";require "../includes/header.php";
+function countRows($c,$t){return $c->query("SELECT COUNT(*) n FROM $t")->fetch_assoc()["n"];}
+$p=countRows($conn,"pasien");$d=countRows($conn,"dokter");$j=countRows($conn,"jadwal");$o=countRows($conn,"obat");
+?>
+<div class="welcome"><div><div class="eyebrow">OVERVIEW</div><h1>Selamat datang, Admin 👋</h1><p>Ringkasan aktivitas klinik hari ini.</p></div><div class="date-chip">31 Agustus 2026</div></div>
+<div class="stats">
+<div class="stat"><div class="stat-icon">♙</div><div><small>Total Pasien</small><strong><?=$p?></strong><em>Data terdaftar</em></div></div>
+<div class="stat"><div class="stat-icon">⚕</div><div><small>Dokter</small><strong><?=$d?></strong><em>Dokter terdaftar</em></div></div>
+<div class="stat"><div class="stat-icon">◷</div><div><small>Appointment</small><strong><?=$j?></strong><em>Total jadwal</em></div></div>
+<div class="stat"><div class="stat-icon">✚</div><div><small>Jenis Obat</small><strong><?=$o?></strong><em>Item inventaris</em></div></div>
+</div>
+<div class="quick"><a href="pasien.php?action=add"><span>＋</span><div><b>Tambah pasien</b><small>Daftarkan pasien baru</small></div></a><a href="jadwal.php?action=add"><span>◷</span><div><b>Buat appointment</b><small>Atur jadwal kunjungan</small></div></a><a href="rekam_medis.php?action=add"><span>▤</span><div><b>Rekam medis</b><small>Catat pemeriksaan</small></div></a></div>
+<div class="two-col"><div class="panel"><div class="panel-head"><div><h3>Appointment terbaru</h3><p>Jadwal kunjungan pasien</p></div><a href="jadwal.php">Lihat semua →</a></div><table><thead><tr><th>Pasien</th><th>Dokter</th><th>Tanggal</th><th>Status</th></tr></thead><tbody><?php $q=$conn->query("SELECT j.*,p.nama pasien,d.nama dokter FROM jadwal j JOIN pasien p ON p.id=j.pasien_id JOIN dokter d ON d.id=j.dokter_id ORDER BY j.tanggal DESC,j.waktu DESC LIMIT 6");while($r=$q->fetch_assoc()):?><tr><td><b><?=$r["pasien"]?></b><small><?=substr($r["waktu"],0,5)?></small></td><td><?=$r["dokter"]?></td><td><?=date("d M Y",strtotime($r["tanggal"]))?></td><td><span class="badge <?=$r["status"]==="Selesai"?"success":"pending"?>"><?=$r["status"]?></span></td></tr><?php endwhile;?></tbody></table></div>
+<div class="panel"><div class="panel-head"><div><h3>Pasien terbaru</h3><p>Data yang baru ditambahkan</p></div><a href="pasien.php">Kelola →</a></div><?php $q=$conn->query("SELECT * FROM pasien ORDER BY id DESC LIMIT 5");while($r=$q->fetch_assoc()):?><div class="person"><span class="avatar-sm"><?=strtoupper(substr($r["nama"],0,1))?></span><div><b><?=$r["nama"]?></b><small><?=$r["gender"]?> · <?=$r["umur"]?> tahun</small></div><span class="status">Aktif</span></div><?php endwhile;?></div></div>
+<?php require "../includes/footer.php";?>
