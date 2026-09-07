@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS klinik CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE klinik;
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS rekam_medis; DROP TABLE IF EXISTS jadwal; DROP TABLE IF EXISTS obat; DROP TABLE IF EXISTS dokter; DROP TABLE IF EXISTS pasien;
+SET FOREIGN_KEY_CHECKS=1;
+CREATE TABLE pasien(id INT AUTO_INCREMENT PRIMARY KEY,nama VARCHAR(120) NOT NULL,gender VARCHAR(20) NOT NULL,umur INT NOT NULL,telepon VARCHAR(30),alamat VARCHAR(255));
+CREATE TABLE dokter(id INT AUTO_INCREMENT PRIMARY KEY,nama VARCHAR(120) NOT NULL,spesialis VARCHAR(100),jadwal VARCHAR(80));
+CREATE TABLE jadwal(id INT AUTO_INCREMENT PRIMARY KEY,pasien_id INT NOT NULL,dokter_id INT NOT NULL,tanggal DATE NOT NULL,waktu TIME NOT NULL,status VARCHAR(30) NOT NULL,FOREIGN KEY(pasien_id) REFERENCES pasien(id) ON DELETE CASCADE,FOREIGN KEY(dokter_id) REFERENCES dokter(id) ON DELETE CASCADE);
+CREATE TABLE rekam_medis(id INT AUTO_INCREMENT PRIMARY KEY,pasien_id INT NOT NULL,dokter_id INT NOT NULL,tanggal DATE NOT NULL,diagnosis VARCHAR(255),tindakan VARCHAR(255),FOREIGN KEY(pasien_id) REFERENCES pasien(id) ON DELETE CASCADE,FOREIGN KEY(dokter_id) REFERENCES dokter(id) ON DELETE CASCADE);
+CREATE TABLE obat(id INT AUTO_INCREMENT PRIMARY KEY,nama VARCHAR(120) NOT NULL,kategori VARCHAR(100),stok INT DEFAULT 0,satuan VARCHAR(30),harga DECIMAL(12,2) DEFAULT 0);
+INSERT INTO pasien(nama,gender,umur,telepon,alamat) VALUES ('Siti Rahma','Perempuan',28,'081234567890','Padang'),('Andi Pratama','Laki-laki',34,'082233445566','Padang'),('Dina Maharani','Perempuan',22,'083344556677','Kuranji'),('Rizky Akbar','Laki-laki',40,'084455667788','Lubuk Begalung');
+INSERT INTO dokter(nama,spesialis,jadwal) VALUES ('dr. Ahmad Fauzi','Umum','08:00 - 14:00'),('dr. Nadia Putri','Anak','10:00 - 16:00'),('dr. Rina Lestari','Gigi','08:00 - 13:00');
+INSERT INTO jadwal(pasien_id,dokter_id,tanggal,waktu,status) VALUES (1,1,CURDATE(),'09:00:00','Menunggu'),(2,2,CURDATE(),'11:30:00','Selesai'),(3,3,CURDATE(),'13:00:00','Menunggu');
+INSERT INTO rekam_medis(pasien_id,dokter_id,tanggal,diagnosis,tindakan) VALUES (1,1,CURDATE(),'Demam ringan','Pemeriksaan umum dan obat'),(2,2,DATE_SUB(CURDATE(),INTERVAL 2 DAY),'Batuk','Terapi dan observasi');
+INSERT INTO obat(nama,kategori,stok,satuan,harga) VALUES ('Paracetamol 500mg','Analgesik',45,'Strip',12000),('Amoxicillin 500mg','Antibiotik',7,'Strip',18000),('Vitamin C','Vitamin',32,'Botol',25000),('Cetirizine 10mg','Antihistamin',18,'Strip',15000);
